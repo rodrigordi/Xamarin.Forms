@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Platform.WinRT
 		TabbedPage _parentTabbedPage;
 		bool _showTitle = true;
 		VisualElementTracker<Page, PageControl> _tracker;
-		ContentThemeTransition _transition;
+		EntranceThemeTransition _transition;
 
 		public NavigationPage Element { get; private set; }
 
@@ -218,6 +218,11 @@ namespace Xamarin.Forms.Platform.WinRT
 			_container.SizeChanged -= OnNativeSizeChanged;
 			_container.BackClicked -= OnBackClicked;
 
+#if WINDOWS_UWP
+			if (_parentTabbedPage != null)
+				Element.Appearing -= OnElementAppearing;
+#endif
+
 			SetElement(null);
 			SetPage(null, false, true);
 			_previousPage = null;
@@ -229,9 +234,6 @@ namespace Xamarin.Forms.Platform.WinRT
 				_parentMasterDetailPage.PropertyChanged -= MultiPagePropertyChanged;
 
 #if WINDOWS_UWP
-			if (_parentTabbedPage != null)
-				Element.Appearing -= OnElementAppearing;
-
 			if (_navManager != null)
 			{
 				_navManager.AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
@@ -438,7 +440,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			if (isAnimated && _transition == null)
 			{
-				_transition = new ContentThemeTransition();
+				_transition = new EntranceThemeTransition();
 				_container.ContentTransitions = new TransitionCollection();
 			}
 
